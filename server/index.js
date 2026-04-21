@@ -5,6 +5,7 @@ const path = require('path');
 const SQLiteStore = require('connect-sqlite3')(session);
 
 const db = require('./db');
+const REDIRECT_URL = process.env.REDIRECT_URL || '/';
 const adminRoutes = require('./routes/admin');
 const vendorRoutes = require('./routes/vendor');
 const redeemRoutes = require('./routes/redeem');
@@ -44,6 +45,35 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use('/vendor', vendorRoutes);
 app.use('/redeem', redeemRoutes);
+
+// Health check (used by Docker)
+app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+
+// Success page — shown after guest connects via captive portal
+app.get('/success', (req, res) => {
+  const venueName = process.env.VENUE_NAME || 'WiFi Access';
+  const ssid = process.env.WIFI_SSID || 'Guest WiFi';
+  res.send(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connected — ${venueName}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head><body class="redeem-body">
+  <div class="redeem-card">
+    <div class="redeem-header">
+      <div class="redeem-logo">✓</div>
+      <h1 class="redeem-title">You're online!</h1>
+      <p class="redeem-subtitle">${venueName} · ${ssid}</p>
+    </div>
+    <div class="redeem-content" style="text-align:center;padding:2rem 1.5rem">
+      <p style="color:var(--green);font-size:3rem;margin-bottom:1rem">🎉</p>
+      <p style="color:var(--text2);font-size:0.95rem">Your device is now connected to the internet.</p>
+      <p style="color:var(--text3);font-size:0.8rem;margin-top:1rem">You can close this page.</p>
+    </div>
+  </div>
+</body></html>`);
+});
 
 // Root redirect
 app.get('/', (req, res) => res.redirect('/admin'));

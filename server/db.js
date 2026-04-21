@@ -3,11 +3,13 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 const bcrypt = require('bcrypt');
 
-// Ensure data directory exists
-const dataDir = path.join(__dirname, '../data');
+// Ensure data directory exists — use DATA_DIR env var for Docker deployments
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '../data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new Database(path.join(dataDir, 'access.db'));
+
+const storeDb = new Database(path.join(dataDir, 'sessions.db'));
 
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');

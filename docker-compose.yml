@@ -1,0 +1,13 @@
+services:
+  wavepass:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - wavepass-data:/data
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  wavepass-data:
