@@ -12,6 +12,7 @@
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.3.0",
     "connect-sqlite3": "^0.9.15",
+    "dotenv": "^17.4.2",
     "express": "^4.21.0",
     "express-session": "^1.18.1",
     "https-proxy-agent": "^7.0.5",
